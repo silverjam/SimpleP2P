@@ -13,12 +13,11 @@ I wrote this on Ubuntu 12.10, I installed the following packages:
     sudo apt-get install cmake
     sudo apt-get install libboost-dev
     sudo apt-get install libboost-system-dev
-    sudo apt-get install libprotobuf-dev
     sudo apt-get install libpython3.3-dev
 
 To build:
 
-    cmake CMakeLists.txt && make
+    cmake . && make
 
 To test:
 
@@ -42,13 +41,13 @@ This a little tricky-- not as straightforward as just adding a signal handler,
 but my google-kung-foo found a suitable answer.
 
 Handling this in boost::asio also took a little googling-- because I wanted to
-cleanly tear down asio server.
+cleanly tear down the asio server.
 
 ### Asynchronous vs synchronous
 
-This was implemented using async methods from boost::asio (examples online
-where easy to adapt)-- I used async to start because of considerations for how
-something like this might be used in a larger application.  You could try the
+This was implemented using async methods from boost::asio (examples online were
+easy to adapt)-- I used async to start because of considerations for how
+something like this might be used in a larger application.  You could throw the
 synchronous communications in a thread, but usually it's better to avoid the
 threading and place the library in the event loop of the application.  To do
 this though, you need to write things asynchronously and have a method that
@@ -63,16 +62,15 @@ like the easiest way to get something that resembled P2P.
 
 ## Limitations
 
-This type of "P2P" is multicast-- it does not use a central server, DHT, or
+This type of "P2P" is multicast-- it does not use a central server, DHT, or a
 supernode to perform any sort of coordination between the peers.  Large amounts
 of traffic will probably flood the network.
 
 A better implementation would probably just use multicast for node discover,
-then TCP for message transmission.
+then TCP, or plain UDP (non-multicast) for message transmission.
 
 As for the multicast aspect, multicast usually doesn't travel past the local
-network segment, so this code will only work with devices behind one router /
-switch / bridge.
+network segment, so this code will only work with devices behind one router.
 
 ## The client must be written to be portable
 
@@ -80,9 +78,9 @@ switch / bridge.
 
 The source uses boost, which is more than a multi platform layer, but it
 provides this too.  Any networking, interaction with time libraries, and
-anything else that's outside the standard should go through boost.  Except
-where standard C libraries can be used safely (in this library ::signal() was
-used).
+anything else that's outside the standard library (std::) should go through
+boost.  Except where standard C libraries can be used safely (in this library
+::signal() was used).
 
 ### Build system
 
@@ -91,10 +89,9 @@ The build system used is CMake-- which provides cross-platform compilation.
 ## Simple test program in native code
 
 The simple test program written in native code is contained in the
-simplep2p-cli program:
+simplep2p-cli program, to run:
 
-    cmake CMakeLists.txt
-    make
+    cmake . && make
     ./src/simplep2p-cli recv &
     bg0=$!
     ./src/simplep2p-cli recv &
@@ -151,9 +148,9 @@ _test/send.py_:
         print "FAIL"
         sys.exit(1)
 
-Start a peer is even simple, from _test/wait.py_:
+Starting a peer is even simpler, from _test/wait.py_:
 
     import simplep2p as s
     s.wait()
 
-The Python test sequence can be lauched via the _test/runtest.sh_ script.
+The Python test sequence can be lauched via the script: _test/runtest.sh_.
