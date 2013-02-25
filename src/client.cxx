@@ -1,82 +1,31 @@
 // client.cxx
 
-#include <cstdlib>
-#include <iostream>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
+#include <string>
 
 #include "client.hxx"
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-class client_private
-{
-public:
-  client_private(boost::asio::io_service& io_service)
-    : socket_(io_service)
-  {
-  }
-
-  tcp::socket socket_;
-  enum { max_length = 1024 };
-  char data_[max_length];
-};
+const std::string LISTEN_ADDRESS = "0.0.0.0";
+const std::string MULTICAST_ADDR = "239.255.0.1";
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-client::client(boost::asio::io_service& io_service)
-    : d(new client_private(io_service))
+client::client(boost::asio::io_service& io_service, bool sending)
 {
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-tcp::socket& client::socket()
-{
-    return d->socket_;
+    if ( sending )
+    {
+        psender_ = std::unique_ptr<sender>(new sender(io_service,
+              boost::asio::ip::address::from_string(MULTICAST_ADDR)));
+    }
+    else
+    {
+        preceiver_ = std::unique_ptr<receiver>(new receiver(io_service,
+                boost::asio::ip::address::from_string(LISTEN_ADDRESS),
+                boost::asio::ip::address::from_string(MULTICAST_ADDR)));
+    }
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void client::start()
 {
-    d->socket_.async_read_some(boost::asio::buffer(d->data_, d->max_length),
-	boost::bind(&client::handle_read, this,
-	  boost::asio::placeholders::error,
-	  boost::asio::placeholders::bytes_transferred));
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void client::handle_read(const boost::system::error_code& error,
-  size_t bytes_transferred)
-{
-    if (!error)
-    {
-      boost::asio::async_write(d->socket_,
-	  boost::asio::buffer(d->data_, bytes_transferred),
-	  boost::bind(&client::handle_write, this,
-	    boost::asio::placeholders::error));
-    }
-    else
-    {
-      delete this;
-    }
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void client::handle_write(const boost::system::error_code& error)
-{
-    if (!error)
-    {
-      d->socket_.async_read_some(boost::asio::buffer(d->data_, d->max_length),
-	  boost::bind(&client::handle_read, this,
-	    boost::asio::placeholders::error,
-	    boost::asio::placeholders::bytes_transferred));
-    }
-    else
-    {
-      delete this;
-    }
 }

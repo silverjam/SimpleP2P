@@ -1,25 +1,23 @@
 // client.hxx
 
-#include <cstdlib>
-#include <iostream>
-#include <boost/bind.hpp>
+#ifndef _client_hxx
+#define _client_hxx
+
 #include <boost/asio.hpp>
+#include <memory>
 
-using boost::asio::ip::tcp;
-
-class client_private;
+#include "sender.hxx"
+#include "receiver.hxx"
 
 class client
 {
 public:
-  client(boost::asio::io_service& io_service);
-  tcp::socket& socket();
-
+  client(boost::asio::io_service& io_service, bool sending);
   void start();
 
 private:
-  void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
-  void handle_write(const boost::system::error_code& error);
-
-  client_private* d;
+  std::unique_ptr<sender> psender_;
+  std::unique_ptr<receiver> preceiver_;
 };
+
+#endif
