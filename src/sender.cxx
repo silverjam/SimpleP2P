@@ -23,7 +23,6 @@ sender::sender(boost::asio::io_service& io_service,
       timer_(io_service),
       message_count_(0),
       uuid_(uuid)
-
   {
   }
 
@@ -46,7 +45,13 @@ void sender::send_message(std::string msg)
 void sender::send_discover()
 {
     string msg("discover " + boost::uuids::to_string(uuid_));
+    get_discovered()->clear();
     send_message(msg);
+
+    timer_.expires_from_now(boost::posix_time::seconds(1));
+      timer_.async_wait(
+          boost::bind(&sender::handle_timeout, this,
+            boost::asio::placeholders::error));
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,32 +60,21 @@ void sender::handle_send_to(const boost::system::error_code& error)
 {
     if (!error)
     {
-        std::cout << "message sent successfully" << std::endl;
+        std::cout << ">>> Message sent successfully" << std::endl;
     }
-
-#if 0
-    if (!error && message_count_ < max_message_count)
-    {
-      timer_.expires_from_now(boost::posix_time::seconds(1));
-      timer_.async_wait(
-          boost::bind(&sender::handle_timeout, this,
-            boost::asio::placeholders::error));
-    }
-#endif
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//! Handle timeout of the send_discover method, which waits 1 second
+//  for peers to respond.
+//
 void sender::handle_timeout(const boost::system::error_code& error)
-  {
+{
     if (!error)
     {
-      std::ostringstream os;
-      os << "Message " << message_count_++;
-      message_ = os.str();
-
-      socket_.async_send_to(
-          boost::asio::buffer(message_), endpoint_,
-          boost::bind(&sender::handle_send_to, this,
-            boost::asio::placeholders::error));
+        for (int x = 0; x < discovered_.size(); x++)
+        {
+            std::cout << ">>> Discovered peer: " << discovered_[x] << std::endl;
+        }
     }
-  }
+}

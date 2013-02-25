@@ -25,6 +25,8 @@ public:
   void send_message(std::string msg);
   void send_discover();
 
+  inline std::vector<std::string>* get_discovered() { return &discovered_; }
+
   void handle_send_to(const boost::system::error_code& error);
   void handle_timeout(const boost::system::error_code& error);
 
@@ -35,6 +37,7 @@ private:
   int message_count_;
   std::string message_;
   boost::uuids::uuid uuid_;
+  std::vector<std::string> discovered_;
 };
 
 #endif

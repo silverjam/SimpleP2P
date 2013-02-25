@@ -58,8 +58,7 @@ void string_split(string input, vector<string>& output)
          back_inserter<vector<string> >(output));
 }
 
-void receiver::handle_receive_from(const boost::system::error_code& error,
-      size_t bytes_recvd)
+void receiver::handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd)
   {
     if (!error)
     {
@@ -73,10 +72,18 @@ void receiver::handle_receive_from(const boost::system::error_code& error,
         {
             sender_->send_message("discovered " + message[1] + " " + uuids::to_string(uuid_));
         }
-
         else if ( message[0] == "discovered" )
         {
             std::cout << os.str() << std::endl;
+            std::string uuid_str = uuids::to_string(uuid_);
+
+            // check if message is to us
+            if ( message[1] == uuid_str )
+            {
+                // don't add if we sent this
+                if ( message[2] != uuid_str )
+                    sender_->get_discovered()->push_back(message[2]);
+            }
         }
 
         // re-issue

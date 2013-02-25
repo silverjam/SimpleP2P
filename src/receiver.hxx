@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
