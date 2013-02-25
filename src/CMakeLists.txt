@@ -11,10 +11,13 @@ endif()
 find_package ( Boost COMPONENTS system REQUIRED )
 find_package ( Threads REQUIRED )
 
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+add_definitions ( -DDEBUG_LOGGING )
+
+include_directories ( ${Boost_INCLUDE_DIR} )
 
 add_executable(
     simplep2p 
+    main.cxx 
     simplep2p.cxx 
     client.cxx
     sender.cxx

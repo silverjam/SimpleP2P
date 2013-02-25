@@ -1,6 +1,7 @@
 CMakeCache.txt
 CMakeFiles/
 .*.swp
+.*.swo
 Makefile
 *.cmake
 src/simplep2p

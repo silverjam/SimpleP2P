@@ -12,7 +12,6 @@ const std::string LISTEN_ADDRESS = "0.0.0.0";
 const std::string MULTICAST_ADDR = "239.255.0.1";
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 client::client(boost::asio::io_service& io_service)
 {
     boost::uuids::uuid uuid = boost::uuids::random_generator()();
@@ -35,4 +34,21 @@ client::client(boost::asio::io_service& io_service)
                 new receiver(io_service, listen_addr, multicast_addr, uuid, psender_)
             );
     }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+client::~client()
+{
+//#if DEBUG_LOGGING
+//    std::cout << __FUNCTION__ << std::endl;
+//    std::cout << "preceiver_.reset()" << std::endl;
+//#endif
+
+    preceiver_.reset();
+
+//#if DEBUG_LOGGING
+//    std::cout << "psender_.reset()" << std::endl;
+//#endif
+
+    psender_.reset();
 }

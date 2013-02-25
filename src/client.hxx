@@ -14,11 +14,13 @@ class client
 {
 public:
   client(boost::asio::io_service& io_service);
+  ~client();
+
   inline std::shared_ptr<sender> get_sender() { return psender_; }
 
 private:
-  std::shared_ptr<sender> psender_;
   std::unique_ptr<receiver> preceiver_;
+  std::shared_ptr<sender> psender_;
 };
 
 #endif

@@ -27,15 +27,22 @@ public:
     std::shared_ptr<sender> psender
     );
 
+  ~receiver();
+
   void handle_receive_from(const boost::system::error_code& error,
       size_t bytes_recvd);
 
 private:
-  boost::asio::ip::udp::socket socket_;
+  typedef boost::shared_ptr<boost::asio::ip::udp::socket> socket_ptr;
+
+  socket_ptr socket_;
   boost::asio::ip::udp::endpoint sender_endpoint_;
+
   enum { max_length = 1024 };
   char data_[max_length];
+
   const boost::asio::ip::address& multicast_address_;
+
   boost::uuids::uuid uuid_;
   std::shared_ptr<sender> sender_;
 };
