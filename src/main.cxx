@@ -3,6 +3,11 @@
 #include "client.hxx"
 #include "simplep2p.hxx"
 
+void print_usage(char* argv[])
+{
+    std::cerr << "Usage: " << argv[0] << " <\"send\" | \"recv\">" << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
     using namespace std;
@@ -11,11 +16,24 @@ int main(int argc, char* argv[])
     try
 #endif
     {
-
+        if ( argc < 2 )
+        {
+            print_usage(argv);
+            return 1;
+        }
+        
         if ( argv[1] == string("send") )
         {
+            std::cout << "Sending..." << std::endl;
+
             simplep2p simp;
             simp.discover_peers();
+
+            if ( simp.get_peer_count() == 0 )
+            {
+                std::cout << "FAIL: NO PEERS!" << std::endl;
+                return 0;
+            }
 
             simp.send_message_to_peers("hello");
 
@@ -28,7 +46,7 @@ int main(int argc, char* argv[])
                 std::cout << "PASS" << std::endl;
             }
         }
-        else
+        else if ( argv[1] == string("recv") )
         {
             boost::asio::io_service io_service;
 
@@ -36,6 +54,11 @@ int main(int argc, char* argv[])
             the_client = unique_ptr<client>(new client(io_service));
 
             io_service.run();
+        }
+        else
+        {
+            print_usage(argv);
+            return 1;
         }
     }
 #ifdef NDEBUG

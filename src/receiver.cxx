@@ -29,6 +29,7 @@ receiver::receiver(boost::asio::io_service& io_service,
     : multicast_address_(multicast_address)
     , uuid_(uuid)
     , sender_(psender)
+    , signals_(io_service)
 {
     // Create the socket so that multiple may be bound to the same address.
     boost::asio::ip::udp::endpoint listen_endpoint(
@@ -49,6 +50,10 @@ receiver::receiver(boost::asio::io_service& io_service,
         boost::bind(&receiver::handle_receive_from, this,
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
+
+    signals_.add(SIGINT);
+    signals_.add(SIGTERM);
+    signals_.async_wait(bind(&receiver::handle_stop, this));
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -72,7 +77,7 @@ static void string_split(string input, vector<string>& output)
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void receiver::handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd)
-  {
+{
     if (!error)
     {
         std::ostringstream os;
@@ -125,4 +130,10 @@ void receiver::handle_receive_from(const boost::system::error_code& error, size_
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred));
     }
-  }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void receiver::handle_stop()
+{
+    socket_->get_io_service().stop();
+}

@@ -72,6 +72,17 @@ public:
         io_service_->run();
     }
 
+    void wait()
+    {
+        reset();
+        io_service_->run();
+    }
+
+    void stop()
+    {
+        io_service_->stop();
+    }
+
     unique_ptr<boost::asio::io_service> io_service_;
     unique_ptr<client> client_;
 
@@ -133,4 +144,16 @@ const char* simplep2p::get_peer_of_response(int index)
 const char* simplep2p::get_text_of_response(int index)
 {
     return d->responses_[index].c_str();
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void simplep2p::wait()
+{
+    d->wait();
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void simplep2p::stop()
+{
+    d->stop();
 }

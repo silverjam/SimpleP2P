@@ -35,6 +35,8 @@ public:
 private:
   typedef boost::shared_ptr<boost::asio::ip::udp::socket> socket_ptr;
 
+  void handle_stop();
+
   socket_ptr socket_;
   boost::asio::ip::udp::endpoint sender_endpoint_;
 
@@ -45,6 +47,8 @@ private:
 
   boost::uuids::uuid uuid_;
   std::shared_ptr<sender> sender_;
+
+  boost::asio::signal_set signals_;
 };
 
 #endif

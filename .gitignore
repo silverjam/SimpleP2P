@@ -4,6 +4,9 @@ CMakeFiles/
 .*.swo
 Makefile
 *.cmake
-src/simplep2p
+src/simplep2p-cli
 .*~
 *~
+*.o
+*.a
+build/

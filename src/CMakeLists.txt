@@ -15,16 +15,25 @@ add_definitions ( -DDEBUG_LOGGING )
 
 include_directories ( ${Boost_INCLUDE_DIR} )
 
-add_executable(
-    simplep2p 
-    main.cxx 
+file ( GLOB simplep2p_srcs
     simplep2p.cxx 
     client.cxx
     sender.cxx
     receiver.cxx
     )
 
+add_executable(
+    simplep2p-cli
+    main.cxx 
+    )
+
+add_library(
+    simplep2p 
+    ${simplep2p_srcs}
+    )
+
 TARGET_LINK_LIBRARIES(
+  simplep2p-cli
   simplep2p
   ${Boost_LIBRARIES} 
   ${Boost_SYSTEM_LIBRARY}

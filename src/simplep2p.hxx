@@ -33,6 +33,12 @@ public:
     //! Get the text of the peer that responded at an index
     const char* get_text_of_response(int index);
 
+    //! Wait for a peer message
+    void wait();
+
+    //! Stop a wait operation
+    void stop();
+
 private:
     simplep2p_private* d;
 };
