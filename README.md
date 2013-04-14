@@ -14,6 +14,13 @@ I wrote this on Ubuntu 12.10, I installed the following packages:
     sudo apt-get install libboost-dev
     sudo apt-get install libboost-system-dev
     sudo apt-get install libpython3.3-dev
+    sudo apt-get install libboost-date-time1.49.0
+    sudo apt-get install libboost-dev
+    sudo apt-get install libboost-iostreams1.49.0
+    sudo apt-get install libboost-system-dev
+    sudo apt-get install libboost-system1.49-dev
+    sudo apt-get install libboost-system1.49.0
+    sudo apt-get install libboost1.49-dev
 
 To build:
 
@@ -96,6 +103,12 @@ simplep2p-cli program, to run:
     bg0=$!
     ./src/simplep2p-cli recv &
     bg1=$!
+    ./src/simplep2p-cli recv &
+    bg1=$!
+    ./src/simplep2p-cli recv &
+    bg1=$!
+    ./src/simplep2p-cli recv &
+    bg1=$!
     sleep 1
     ./src/simplep2p-cli send
     kill $bg0
@@ -154,3 +167,4 @@ Starting a peer is even simpler, from _test/wait.py_:
     s.wait()
 
 The Python test sequence can be lauched via the script: _test/runtest.sh_.
+
